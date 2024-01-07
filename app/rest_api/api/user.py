@@ -329,7 +329,9 @@ def test(request: Request):
 @user_router.get("/google/login")
 async def login(request: Request):
     redirect_uri = request.url_for("auth")
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    return await oauth.google.authorize_redirect(
+        request, redirect_uri, access_type="offline"
+    )
 
 
 @user_router.get("/auth/google")
@@ -348,10 +350,11 @@ async def auth(request: Request, db: Session = Depends(get_db)):
 
     if user is None:
         password = user_data["sub"]
-        user_data = EmailRegisterSchema(email=email, password=password)
-        con.email_register_user(db, user_data)
+        user_login_data = EmailRegisterSchema(email=email, password=password)
+        con.email_register_user(db, user_login_data)
+        # TODO add & commit user_login_data
 
-        sns = Sns(sub=user_data["sub"], refresh_token=user_data["refresh_token"])
+        sns = Sns(sub=user_data["sub"], refresh_token=access_token["refresh_token"])
         db.add(sns)
         db.commit()
 
