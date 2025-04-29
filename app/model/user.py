@@ -29,7 +29,9 @@ class User(Base):
     password = Column(String(256), comment="비밀번호")
     is_active = Column(Boolean, default=True, comment="활성화 여부")
 
-    profile = relationship(Profile, back_populates="user", cascade="all, delete-orphan")
+    profile = relationship(
+        Profile, back_populates="user", cascade="all, delete-orphan", uselist=False
+    )
 
     clubs = relationship(
         "Club",

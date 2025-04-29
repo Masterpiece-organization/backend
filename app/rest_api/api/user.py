@@ -232,7 +232,7 @@ def update_user_profile(
         db.commit()
         db.refresh(profile)
     else:
-        profile = profile[0]
+        # profile = profile[0]
 
         for key, value in user_data.dict(exclude_none=True).items():
             setattr(profile, key, value)
